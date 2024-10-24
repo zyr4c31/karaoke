@@ -5,27 +5,28 @@ import (
 	"os/exec"
 )
 
-func Play(id string) error {
+func IsInstalled() (bool, error) {
+	if err := exec.Command("mpv").Run(); err != nil {
+		return false, err
+	}
+	return true, nil
+}
+
+func Play(id string) (int, error) {
 	arg := fmt.Sprintf("https://www.youtube.com/watch?v=%v", id)
 	mpv := exec.Command("mpv", arg)
-	if err := mpv.Run(); err != nil {
+	if err := mpv.Start(); err != nil {
+		return 0, err
+	}
+	return mpv.Process.Pid, nil
+}
+
+func StartMpv() error {
+	mpv := exec.Command("mpv --idle --input-ipc-server=/tmp/mpvsocket")
+	// arg := fmt.Sprintf("https://www.youtube.com/watch?v=%v", id)
+	// mpv := exec.Command("mpv", arg)
+	if err := mpv.Start(); err != nil {
 		return err
 	}
 	return nil
-
-	// ipcc := mpv.NewIPCClient("/tmp/mpvsocket") // Lowlevel client
-	// c := mpv.NewClient(ipcc)                   // Highlevel client, can also use RPCClient
-	//
-	// c.Loadfile(arg, mpv.LoadFileModeReplace)
-	// c.SetPause(true)
-	// c.Seek(600, mpv.SeekModeAbsolute)
-	// c.SetFullscreen(true)
-	// c.SetPause(false)
-	//
-	// pos, err := c.Position()
-	// if err != nil {
-	// 	return err
-	// }
-	// fmt.Printf("Position in Seconds: %.0f", pos)
-	// return nil
 }
