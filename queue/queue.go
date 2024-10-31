@@ -1,7 +1,7 @@
 package queue
 
 import (
-	"github.com/zyr4c31/karaoke/mpv"
+	"github.com/zyr4c31/karaoke/oldmpv"
 	"google.golang.org/api/youtube/v3"
 )
 
@@ -20,7 +20,7 @@ func (q *Queue) Add(item *youtube.SearchResult) {
 
 // Plays the first song in the queue, returns an error
 func (q *Queue) Play() (int, error) {
-	pid, err := mpv.Play(q.Songs[0].Id)
+	pid, err := oldmpv.Play(q.Songs[0].Id)
 	if err != nil {
 		return 0, err
 	}

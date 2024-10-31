@@ -1,4 +1,4 @@
-package mpv
+package oldmpv
 
 import (
 	"fmt"
