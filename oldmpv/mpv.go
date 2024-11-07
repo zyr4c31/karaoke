@@ -22,7 +22,7 @@ func Play(id string) (int, error) {
 }
 
 func StartMpv() error {
-	mpv := exec.Command("mpv --idle --input-ipc-server=/tmp/mpvsocket")
+	mpv := exec.Command("mpv", "--idle", "--input-ipc-server=/tmp/mpvsocket", "--no-video")
 	// arg := fmt.Sprintf("https://www.youtube.com/watch?v=%v", id)
 	// mpv := exec.Command("mpv", arg)
 	if err := mpv.Start(); err != nil {
