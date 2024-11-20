@@ -1,6 +1,7 @@
 package tui
 
 import (
+	"log"
 	"os"
 	"os/exec"
 )
@@ -15,4 +16,16 @@ func Clear() error {
 		return err
 	}
 	return nil
+}
+
+func PrintHelp() {
+	commands := map[string]string{
+		"help":   "print this",
+		"query":  "search",
+		"toggle": "toggle play/pause",
+	}
+
+	for command := range commands {
+		log.Printf("%v %v", command, commands[command])
+	}
 }

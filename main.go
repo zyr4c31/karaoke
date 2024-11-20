@@ -6,60 +6,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-	"net"
 	"os"
 	"time"
 
 	"github.com/zyr4c31/karaoke/client"
 	"github.com/zyr4c31/karaoke/mpv"
+	"github.com/zyr4c31/karaoke/tui"
 )
-
-type MPVResponse struct {
-	Data      []Song `json:"data"`
-	RequestID int    `json:"request_id"`
-	Error     string `json:"error"`
-}
-
-type Song struct {
-	FileName string `json:"filename"`
-	Title    string `json:"title"`
-	ID       int    `json:"id"`
-	Current  bool   `json:"current"`
-	Playing  bool   `json:"playing"`
-}
-
-func togglePause(conn net.Conn) {
-	command := mpv.MPVCommand{
-		Command: []string{"cycle", "pause"},
-	}
-
-	cmdBytes, err := json.Marshal(command)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	newline := []byte("\n")
-	cmdBytes = append(cmdBytes, newline...)
-
-	n, err := conn.Write(cmdBytes)
-	if err != nil {
-		log.Fatal("conn.Write err:", err)
-	}
-
-	fmt.Printf("wrote %d number of bytes\n", n)
-
-	conn.SetReadDeadline(time.Now().Add(5 * time.Second))
-
-	buf := make([]byte, 65535)
-	n, err = conn.Read(buf)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	trimmedBuf := bytes.TrimRight(buf, "\x00")
-
-	fmt.Printf("string(buf): %v\n", string(trimmedBuf))
-}
 
 func main() {
 	conn, err := mpv.Connect()
@@ -68,83 +21,58 @@ func main() {
 	}
 	defer conn.Close()
 
-	command := mpv.MPVCommand{
-		Command: []string{"cycle", "pause"},
-	}
-
-	cmdBytes, err := json.Marshal(command)
+	buffer, err := mpv.SendAndReceive(conn, "get_property", "playlist")
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	newline := []byte("\n")
-	cmdBytes = append(cmdBytes, newline...)
-
-	n, err := conn.Write(cmdBytes)
-	if err != nil {
-		log.Fatal("conn.Write err:", err)
-	}
-
-	fmt.Printf("wrote %d number of bytes\n", n)
-
-	conn.SetReadDeadline(time.Now().Add(5 * time.Second))
-
-	buf := make([]byte, 65535)
-	n, err = conn.Read(buf)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	trimmedBuf := bytes.TrimRight(buf, "\x00")
+	trimmedBuf := bytes.TrimRight(buffer, "\x00")
 
 	fmt.Printf("string(buf): %v\n", string(trimmedBuf))
 
-	var response MPVResponse
+	reader := bytes.NewReader(trimmedBuf)
 
-	if err := json.Unmarshal(trimmedBuf, &response); err != nil {
-		log.Fatal("json.Unmarshal err:", err)
+	decoder := json.NewDecoder(reader)
+
+	var reply mpv.Reply
+	var event mpv.Event
+
+	for token, err := decoder.Token(); err == nil; {
+		if token == "data" {
+			if err := json.Unmarshal(trimmedBuf, &reply); err != nil {
+				log.Fatal(err)
+			}
+			fmt.Printf("reply: %v\n", reply)
+			break
+		}
+		if token == "event" {
+			if err := json.Unmarshal(trimmedBuf, &event); err != nil {
+				log.Fatal(err)
+			}
+			fmt.Printf("event: %v\n", event)
+			break
+		}
+		token, err = decoder.Token()
 	}
 
-	fmt.Printf("string(response): %v\n", response)
-	fmt.Printf("len(response.Data): %v\n", len(response.Data))
-
 	for true {
-		// cmd := exec.Command("clear")
-		// cmd.Stdout = os.Stdout
-		// cmd.Run()
-
-		command := mpv.MPVCommand{
-			Command: []string{"get_property", "playlist"},
-		}
-
-		cmdBytes, err := json.Marshal(command)
+		tui.PrintHelp()
+		time.Sleep(10 * time.Second)
+		err := tui.Clear()
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		newline := []byte("\n")
-		cmdBytes = append(cmdBytes, newline...)
-
-		n, err := conn.Write(cmdBytes)
-		if err != nil {
-			log.Fatal("conn.Write err:", err)
-		}
-
-		fmt.Printf("wrote %d number of bytes\n", n)
-
-		conn.SetReadDeadline(time.Now().Add(5 * time.Second))
-
-		buf := make([]byte, 65535)
-		n, err = conn.Read(buf)
+		buffer, err := mpv.SendAndReceive(conn, "get_property", "playlist")
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		trimmedBuf := bytes.TrimRight(buf, "\x00")
+		trimmedBuf := bytes.TrimRight(buffer, "\x00")
 
 		fmt.Printf("string(buf): %v\n", string(trimmedBuf))
 
-		var response MPVResponse
+		var response mpv.Reply
 
 		if err := json.Unmarshal(trimmedBuf, &response); err != nil {
 			log.Fatal("json.Unmarshal err:", err)
@@ -170,25 +98,25 @@ func main() {
 
 		videoLink := fmt.Sprintf("https://www.youtube.com/watch?v=%v", result.Id.VideoId)
 
+		var modeFile string
+
 		if len(response.Data) < 1 {
-			command = mpv.MPVCommand{
-				Command: []string{"loadfile", videoLink, "replace"},
-			}
+			modeFile = "replacej"
 		} else {
-			command = mpv.MPVCommand{
-				Command: []string{"loadfile", videoLink, "append"},
-			}
+			modeFile = "append"
 		}
 
-		cmdBytes, err = json.Marshal(command)
+		buffer, err = mpv.SendAndReceive(conn, "loadfile", videoLink, modeFile)
+
+		cmdBytes, err := json.Marshal(buffer)
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		newline = []byte("\n")
+		newline := []byte("\n")
 		cmdBytes = append(cmdBytes, newline...)
 
-		n, err = conn.Write(cmdBytes)
+		n, err := conn.Write(cmdBytes)
 		if err != nil {
 			log.Fatal("conn.Write err:", err)
 		}
@@ -197,7 +125,7 @@ func main() {
 
 		conn.SetReadDeadline(time.Now().Add(5 * time.Second))
 
-		buf = make([]byte, 65535)
+		buf := make([]byte, 65535)
 		n, err = conn.Read(buf)
 		if err != nil {
 			log.Fatal(err)
