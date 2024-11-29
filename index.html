@@ -1,0 +1,33 @@
+<html>
+
+<head>
+    <script type="module"
+        src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.18.0/cdn/shoelace-autoloader.js"></script>
+    <link rel="stylesheet" media="(prefers-color-scheme:light)"
+        href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.18.0/cdn/themes/light.css" />
+    <link rel="stylesheet" media="(prefers-color-scheme:dark)"
+        href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.18.0/cdn/themes/dark.css"
+        onload="document.documentElement.classList.add('sl-theme-dark');" />
+    <script src="https://unpkg.com/htmx.org@2.0.3"
+        integrity="sha384-0895/pl2MU10Hqc6jd4RvrthNlDiE9U1tWmX7WRESftEDRosgxNsQG/Ze9YMRzHq"
+        crossorigin="anonymous"></script>
+</head>
+
+<body>
+    <sl-card size="large">
+        Queue:
+        {{ range . }}
+        Song {{ . }}
+        {{ end }}
+        <form>
+            <input name="query" placeholder="song name here" />
+            <sl-button hx-post="/add" hx-swap="none" size="large">Play</sl-button>
+        </form>
+
+        <sl-button hx-post="/stop" hx-swap="none" size="large">Stop</sl-button>
+        <sl-button hx-post="/toggle-pause" hx-swap="none" size="large">toggle pause</sl-button>
+        <sl-button hx-post="/playlist-clear" hx-swap="none" size="large">playlist-clear</sl-button>
+    </sl-card>
+</body>
+
+</html>

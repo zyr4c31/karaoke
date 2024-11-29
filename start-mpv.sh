@@ -1,1 +1,1 @@
-mpv --idle --input-ipc-server=/tmp/mpvsocket
+mpv --idle --fullscreen --input-ipc-server=/tmp/mpvsocket

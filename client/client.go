@@ -13,10 +13,11 @@ import (
 )
 
 var (
-	maxResults = flag.Int64("max-results", 10, "Max Youtube results")
+	maxResults = flag.Int64("max-results", 1, "Max Youtube results")
 	ApiKey     string
 )
 
+// Sets the API key for the youtube client
 func GetApiKey() error {
 	if err := godotenv.Load(".env"); err != nil {
 		err = errors.New(fmt.Sprintf("godotenv.Load err: %v", err))
@@ -31,20 +32,20 @@ func GetApiKey() error {
 }
 
 func Search(query string) (*youtubeApi.SearchResult, error) {
-	if err := GetApiKey(); err != nil {
-		return nil, err
-	}
 	queryPostFix := fmt.Sprintf("%v", query)
 	service, err := youtubeApi.NewService(context.Background(), option.WithAPIKey(ApiKey))
 	if err != nil {
 		err = errors.New(fmt.Sprintf("youtubeApi.NewService err: %v", err))
 		return nil, err
 	}
-	call := service.Search.List([]string{"id,snippet"}).Q(queryPostFix).MaxResults(*maxResults)
+	call := service.Search.List([]string{"id", "snippet"}).Q(queryPostFix).Type("video").MaxResults(*maxResults)
 	response, err := call.Do()
 	if err != nil {
 		err = errors.New(fmt.Sprintf("call.Do() err: %v", err))
 		return nil, err
+	}
+	for _, item := range response.Items {
+		fmt.Printf("item: %v\n", item)
 	}
 
 	for _, item := range response.Items {
