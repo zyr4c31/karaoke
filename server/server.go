@@ -72,6 +72,33 @@ func Run(conn net.Conn) error {
 		fmt.Printf("string(buf): %v\n", string(buf))
 	})
 
+	sm.HandleFunc("/video-yes", func(w http.ResponseWriter, r *http.Request) {
+		if err := mpv.Send(conn, "set_property", "video", "auto"); err != nil {
+			log.Fatal(err)
+		}
+	})
+
+	sm.HandleFunc("/video-no", func(w http.ResponseWriter, r *http.Request) {
+		if err := mpv.Send(conn, "set_property", "video", "no"); err != nil {
+			log.Fatal(err)
+		}
+
+	})
+
+	sm.HandleFunc("/fullscreen-yes", func(w http.ResponseWriter, r *http.Request) {
+		if err := mpv.Send(conn, "set_property", "fullscreen", "yes"); err != nil {
+			log.Fatal(err)
+		}
+
+	})
+
+	sm.HandleFunc("/fullscreen-no", func(w http.ResponseWriter, r *http.Request) {
+		if err := mpv.Send(conn, "set_property", "fullscreen", "no"); err != nil {
+			log.Fatal(err)
+		}
+
+	})
+
 	server := http.Server{
 		Addr:    "192.168.3.112:8080",
 		Handler: sm,
