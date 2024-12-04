@@ -1,0 +1,6 @@
+@media (max-width: 376px) {
+    body {
+        transform: scale(1.5);
+        transform-origin: 0 0;
+    }
+}
