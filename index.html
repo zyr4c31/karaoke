@@ -14,11 +14,14 @@
 </head>
 
 <body>
-    <sl-card size="large">
+    <sl-card>
+        <h1>Queue:</h1>
+
         Queue:
         {{ range . }}
         Song {{ . }}
         {{ end }}
+
         <form>
             <input name="query" placeholder="song name here" />
             <sl-button hx-post="/add" hx-swap="none" size="large">Play</sl-button>
@@ -26,11 +29,20 @@
 
         <sl-button hx-post="/stop" hx-swap="none" size="large">stop</sl-button>
         <sl-button hx-post="/toggle-pause" hx-swap="none" size="large">toggle pause</sl-button>
+    </sl-card>
+
+    <sl-card>
+        <h1>Playlist Controls:</h1>
+        <sl-button hx-post="/playlist-next" hx-swap="none" size="large">playlist-next</sl-button>
+        <sl-button hx-post="/playlist-prev" hx-swap="none" size="large">playlist-prev</sl-button>
         <sl-button hx-post="/playlist-clear" hx-swap="none" size="large">playlist-clear</sl-button>
+    </sl-card>
+    <sl-card>
+        <h1>Video Controls:</h1>
         <sl-button hx-post="/video-yes" hx-swap="none" size="large">show video</sl-button>
         <sl-button hx-post="/video-no" hx-swap="none" size="large">hide video</sl-button>
-        <sl-button hx-post="/fullscreen-yes" hx-swap="none" size="large">fullscreen-yes</sl-button>
-        <sl-button hx-post="/fullscreen-no" hx-swap="none" size="large">fullscreen-no</sl-button>
+        <sl-button hx-post="/fullscreen-yes" hx-swap="none" size="large">fullscreen on</sl-button>
+        <sl-button hx-post="/fullscreen-no" hx-swap="none" size="large">fullscreen off</sl-button>
     </sl-card>
 </body>
 

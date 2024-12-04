@@ -63,6 +63,24 @@ func Run(conn net.Conn) error {
 		mpv.Send(conn, mpv.PropertyManipCycle, mpv.PropertyNamePause)
 	})
 
+	sm.HandleFunc("/playlist-next", func(w http.ResponseWriter, r *http.Request) {
+		buf, err := mpv.SendAndReceive(conn, "playlist-next", "force")
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		fmt.Printf("string(buf): %v\n", string(buf))
+	})
+
+	sm.HandleFunc("/playlist-prev", func(w http.ResponseWriter, r *http.Request) {
+		buf, err := mpv.SendAndReceive(conn, "playlist-prev", "force")
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		fmt.Printf("string(buf): %v\n", string(buf))
+	})
+
 	sm.HandleFunc("/playlist-clear", func(w http.ResponseWriter, r *http.Request) {
 		buf, err := mpv.SendAndReceive(conn, "playlist-clear")
 		if err != nil {
