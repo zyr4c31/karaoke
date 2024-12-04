@@ -1,7 +1,6 @@
 package mpv
 
 import (
-	"bytes"
 	"encoding/json"
 	"net"
 	"os/exec"
@@ -126,7 +125,7 @@ func SendAndReceive(conn net.Conn, command string, args ...string) ([]byte, erro
 		return nil, err
 	}
 
-	trimmedBuf := bytes.TrimRight(buf, "\x00")
+	// trimmedBuf := bytes.TrimRight(buf, "\x00")
 
-	return trimmedBuf, nil
+	return buf, nil
 }

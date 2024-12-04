@@ -1,6 +1,8 @@
 package server
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"html/template"
 	"log"
@@ -15,19 +17,19 @@ func Run(conn net.Conn) error {
 	sm := http.NewServeMux()
 
 	sm.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		err := mpv.Send(conn, "get_property", "playlist")
+		buf, err := mpv.SendAndReceive(conn, "get_property", "playlist")
 		if err != nil {
 			log.Panic(err)
 		}
 
-		// var reply mpv.Reply
-		//
-		// trimmedBuf := bytes.TrimRight(buf, "\x00")
-		//
-		// err = json.Unmarshal(trimmedBuf, &reply)
-		// if err != nil {
-		// 	log.Panic(err)
-		// }
+		trimmedBuf := bytes.TrimRight(buf, "\x00")
+
+		var reply mpv.Reply
+
+		err = json.Unmarshal(trimmedBuf, &reply)
+		if err != nil {
+			log.Panic(err)
+		}
 
 		tmpl, err := template.ParseFiles("index.html")
 		if err != nil {
@@ -36,11 +38,10 @@ func Run(conn net.Conn) error {
 
 		w.Header().Add("Content-Type", "text/html")
 
-		tmpl.Execute(w, nil)
+		tmpl.Execute(w, reply.Data)
 	})
 
 	sm.HandleFunc("/add", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Printf("\"this ran\": %v\n", "this ran")
 		err := r.ParseForm()
 		if err != nil {
 			log.Fatal("parseform err: ", err)
@@ -88,6 +89,29 @@ func Run(conn net.Conn) error {
 		}
 
 		fmt.Printf("string(buf): %v\n", string(buf))
+	})
+
+	sm.HandleFunc("/playlist", func(w http.ResponseWriter, r *http.Request) {
+		buf, err := mpv.SendAndReceive(conn, "get_property", "playlist")
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		fmt.Printf("string(buf): %v\n", string(buf))
+
+		trimmedBuf := bytes.TrimRight(buf, "\x00")
+
+		var reply mpv.Reply
+
+		if err = json.Unmarshal(trimmedBuf, &reply); err != nil {
+			log.Fatal(err)
+		}
+
+		fmt.Printf("reply: %v\n", reply)
+
+		for _, song := range reply.Data {
+			fmt.Printf("song: %v\n", song)
+		}
 	})
 
 	sm.HandleFunc("/video-yes", func(w http.ResponseWriter, r *http.Request) {

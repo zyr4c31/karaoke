@@ -17,9 +17,8 @@
     <sl-card>
         <h1>Queue:</h1>
 
-        Queue:
         {{ range . }}
-        Song {{ . }}
+        <p>{{ .Title }}</p>
         {{ end }}
 
         <form>
@@ -36,6 +35,7 @@
         <sl-button hx-post="/playlist-next" hx-swap="none" size="large">playlist-next</sl-button>
         <sl-button hx-post="/playlist-prev" hx-swap="none" size="large">playlist-prev</sl-button>
         <sl-button hx-post="/playlist-clear" hx-swap="none" size="large">playlist-clear</sl-button>
+        <sl-button hx-get="/playlist" hx-swap="none" size="large">playlist</sl-button>
     </sl-card>
     <sl-card>
         <h1>Video Controls:</h1>
