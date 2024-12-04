@@ -18,13 +18,8 @@
         <h1>Queue:</h1>
 
         {{ range . }}
-        <p>{{ .Title }}</p>
+        <p>{{ .ID }} &nbsp {{ .Title }}</p>
         {{ end }}
-
-        <form>
-            <input name="query" placeholder="song name here" />
-            <sl-button hx-post="/add" hx-swap="none" size="large">Play</sl-button>
-        </form>
 
         <sl-button hx-post="/stop" hx-swap="none" size="large">stop</sl-button>
         <sl-button hx-post="/toggle-pause" hx-swap="none" size="large">toggle pause</sl-button>
@@ -32,10 +27,13 @@
 
     <sl-card>
         <h1>Playlist Controls:</h1>
+        <form>
+            <input name="query" placeholder="song name here" />
+            <sl-button hx-post="/add" hx-swap="none" size="large">Add</sl-button>
+        </form>
         <sl-button hx-post="/playlist-next" hx-swap="none" size="large">playlist-next</sl-button>
         <sl-button hx-post="/playlist-prev" hx-swap="none" size="large">playlist-prev</sl-button>
         <sl-button hx-post="/playlist-clear" hx-swap="none" size="large">playlist-clear</sl-button>
-        <sl-button hx-get="/playlist" hx-swap="none" size="large">playlist</sl-button>
     </sl-card>
     <sl-card>
         <h1>Video Controls:</h1>

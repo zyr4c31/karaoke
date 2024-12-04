@@ -92,7 +92,7 @@ func Run(conn net.Conn) {
 		// 	modeFile = "append"
 		// }
 
-		modeFile = "replace"
+		modeFile = "append"
 		buffer, err = mpv.SendAndReceive(conn, "loadfile", videoLink, modeFile)
 
 		cmdBytes, err := json.Marshal(buffer)
