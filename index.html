@@ -30,12 +30,12 @@
 
         <sl-card>
             <h1>Playlist Controls:</h1>
-            <form>
+            <form hx-post="/add" hx-swap="none">
                 <sl-input name="query" placeholder="song name here"></sl-input>
                 <sl-button hx-post="/add" hx-swap="none" size="large">Add</sl-button>
             </form>
-            <sl-button hx-post="/playlist-next" hx-swap="none" size="large">playlist-next</sl-button>
             <sl-button hx-post="/playlist-prev" hx-swap="none" size="large">playlist-prev</sl-button>
+            <sl-button hx-post="/playlist-next" hx-swap="none" size="large">playlist-next</sl-button>
             <sl-button hx-post="/playlist-clear" hx-swap="none" size="large">playlist-clear</sl-button>
         </sl-card>
         <sl-card>

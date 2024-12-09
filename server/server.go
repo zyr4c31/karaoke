@@ -52,6 +52,8 @@ func Run(conn net.Conn) error {
 		link := fmt.Sprintf("https://youtube.com/watch?v=%v", searchResult.Id.VideoId)
 
 		mpv.Send(conn, mpv.PlaylistManipLoadFile, link, mpv.PlaylistManipLoadfileFlagAppend+"-play")
+
+		w.Header().Add("HX-Refresh", "true")
 	})
 
 	sm.HandleFunc("/stop", func(w http.ResponseWriter, r *http.Request) {
