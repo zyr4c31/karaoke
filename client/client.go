@@ -5,9 +5,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-	"os"
 
-	"github.com/joho/godotenv"
 	"google.golang.org/api/option"
 	youtubeApi "google.golang.org/api/youtube/v3"
 )
@@ -16,20 +14,6 @@ var (
 	maxResults = flag.Int64("max-results", 1, "Max Youtube results")
 	ApiKey     string
 )
-
-// Sets the API key for the youtube client
-func GetApiKey() error {
-	if err := godotenv.Load(".env"); err != nil {
-		err = errors.New(fmt.Sprintf("godotenv.Load err: %v", err))
-		return err
-	}
-	var exist bool
-	ApiKey, exist = os.LookupEnv("API_KEY")
-	if exist != true {
-		panic(exist)
-	}
-	return nil
-}
 
 func Search(query string) (*youtubeApi.SearchResult, error) {
 	queryPostFix := fmt.Sprintf("%v", query)

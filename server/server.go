@@ -8,6 +8,7 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"os"
 
 	"github.com/zyr4c31/karaoke/client"
 	"github.com/zyr4c31/karaoke/mpv"
@@ -141,8 +142,10 @@ func Run(conn net.Conn) error {
 
 	})
 
+	addr := os.Getenv("IP_ADDR")
+
 	server := http.Server{
-		Addr:    "192.168.3.112:8080",
+		Addr:    addr,
 		Handler: sm,
 		// ReadTimeout:       10 * time.Second,
 		// ReadHeaderTimeout: 10 * time.Second,
