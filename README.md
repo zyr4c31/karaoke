@@ -1,12 +1,12 @@
-##
-karaoke ( or karaope ) is a server app that gives local network playlist and playback control of hosts running mpv
+# karaope
+karaope is a server app that gives local network playlist and playback control of hosts running mpv
 
-####
+##
 requirements:
 go
 mpv
 
-####
+##
 usage:
 
 add .env file with keys:
