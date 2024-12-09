@@ -21,6 +21,7 @@
 
             {{ range . }}
             <p>{{ .ID }} &nbsp {{ .Title }}</p>
+            <p> &nbsp {{ .FileName }}</p>
             {{ end }}
 
             <sl-button hx-post="/stop" hx-swap="none" size="large">stop</sl-button>

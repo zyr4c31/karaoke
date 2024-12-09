@@ -22,10 +22,8 @@ func Run(conn net.Conn) error {
 			log.Panic(err)
 		}
 
-		trimmedBuf := bytes.TrimRight(buf, "\x00")
-
 		var reply mpv.Reply
-
+		trimmedBuf := bytes.TrimRight(buf, "\x00")
 		err = json.Unmarshal(trimmedBuf, &reply)
 		if err != nil {
 			log.Panic(err)
@@ -53,7 +51,7 @@ func Run(conn net.Conn) error {
 
 		link := fmt.Sprintf("https://youtube.com/watch?v=%v", searchResult.Id.VideoId)
 
-		mpv.Send(conn, mpv.PlaylistManipLoadFile, link, mpv.PlaylistManipLoadfileFlagAppend)
+		mpv.Send(conn, mpv.PlaylistManipLoadFile, link, mpv.PlaylistManipLoadfileFlagAppend+"-play")
 	})
 
 	sm.HandleFunc("/stop", func(w http.ResponseWriter, r *http.Request) {
